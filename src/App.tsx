@@ -55,7 +55,12 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-white flex flex-col">
+    <div style={{ 
+      height: '100vh', 
+      backgroundColor: 'white', 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
       <TopNav />
       <KanbanBoard
         cards={cards}

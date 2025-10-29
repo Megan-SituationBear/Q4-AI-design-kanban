@@ -33,28 +33,70 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
       <div
         draggable
         onDragStart={() => onDragStart(card)}
-        className="bg-white rounded-lg p-4 border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-grab active:cursor-grabbing"
+        style={{ 
+          backgroundColor: 'white', 
+          borderRadius: '8px', 
+          padding: '16px', 
+          border: '1px solid #e2e8f0', 
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', 
+          cursor: 'grab',
+          transition: 'all 0.2s'
+        }}
         onClick={() => !isEditing && setShowDetails(true)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.1)';
+        }}
       >
         {/* Problem (Title) */}
-        <h4 className="font-semibold text-slate-900 text-sm mb-2 line-clamp-2">
+        <h4 style={{ 
+          fontWeight: '600', 
+          color: '#0f172a', 
+          fontSize: '14px', 
+          marginBottom: '8px', 
+          margin: '0 0 8px 0',
+          lineHeight: '1.4',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>
           {card.problem}
         </h4>
 
         {/* Solution (Subtitle) */}
-        <p className="text-xs text-slate-600 mb-3 line-clamp-2">
+        <p style={{ 
+          fontSize: '12px', 
+          color: '#64748b', 
+          marginBottom: '12px', 
+          margin: '0 0 12px 0',
+          lineHeight: '1.4',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>
           {card.solution}
         </p>
 
         {/* Links */}
-        <div className="flex gap-2">
+        <div style={{ display: 'flex', gap: '8px' }}>
           {card.figmaLink && (
             <a
               href={card.figmaLink}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-indigo-600 hover:underline flex items-center gap-1"
+              style={{ 
+                fontSize: '12px', 
+                color: '#2563eb', 
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12.5A3.5 3.5 0 1 1 8.5 9a3.5 3.5 0 0 1 3.5 3.5zm-3.5 7A3.5 3.5 0 1 1 12 16v3.5zm0-14A3.5 3.5 0 1 1 12 2v3.5zm7 3.5A3.5 3.5 0 1 1 12 5.5v3.5h3.5z"/>
@@ -68,7 +110,14 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-indigo-600 hover:underline flex items-center gap-1"
+              style={{ 
+                fontSize: '12px', 
+                color: '#2563eb', 
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>

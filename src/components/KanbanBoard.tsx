@@ -42,8 +42,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-x-auto p-6">
-      <div className="flex gap-4 min-w-max">
+    <div style={{ flex: 1, overflowX: 'auto', padding: '24px' }}>
+      <div style={{ display: 'flex', gap: '16px', minWidth: 'max-content' }}>
         {columns.map((column) => (
           <KanbanColumn
             key={column.id}

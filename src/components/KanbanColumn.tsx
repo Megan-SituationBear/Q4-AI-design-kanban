@@ -45,25 +45,46 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   };
 
   return (
-    <div className="w-80 flex-shrink-0">
+    <div style={{ width: '300px', flexShrink: 0, minHeight: 'calc(100vh - 200px)' }}>
       {/* Column Header */}
-      <div className="bg-slate-50 rounded-t-lg px-4 py-3 border-b border-slate-200">
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold text-slate-900 text-sm">{column.title}</h3>
-          <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-full">
-            {cards.length}
-          </span>
-        </div>
+      <div style={{ 
+        backgroundColor: '#f8fafc', 
+        borderTopLeftRadius: '8px', 
+        borderTopRightRadius: '8px', 
+        padding: '12px 16px', 
+        borderBottom: '1px solid #e2e8f0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <h3 style={{ fontWeight: '600', color: '#0f172a', fontSize: '14px', margin: 0 }}>
+          {column.title}
+        </h3>
+        <span style={{ 
+          fontSize: '12px', 
+          color: '#64748b', 
+          backgroundColor: 'white', 
+          padding: '4px 8px', 
+          borderRadius: '12px'
+        }}>
+          {cards.length}
+        </span>
       </div>
 
       {/* Drop Zone */}
       <div
-        className="bg-slate-50 min-h-[calc(100vh-200px)] p-3 rounded-b-lg"
+        style={{ 
+          backgroundColor: '#f8fafc', 
+          minHeight: 'calc(100vh - 200px)', 
+          padding: '12px', 
+          borderBottomLeftRadius: '8px', 
+          borderBottomRightRadius: '8px'
+        }}
         onDragOver={onDragOver}
         onDrop={() => onDrop(column.id)}
       >
         {/* Cards */}
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {cards.map((card) => (
             <KanbanCard
               key={card.id}
@@ -77,13 +98,28 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
         {/* Add Card Form */}
         {showAddCard ? (
-          <div className="mt-3 bg-white rounded-lg p-4 border-2 border-blue-500 shadow-md">
+          <div style={{ 
+            marginTop: '12px', 
+            backgroundColor: 'white', 
+            borderRadius: '8px', 
+            padding: '16px', 
+            border: '2px solid #3b82f6', 
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+          }}>
             <input
               type="text"
               value={newProblem}
               onChange={(e) => setNewProblem(e.target.value)}
               placeholder="Problem to Solve"
-              className="w-full px-3 py-2 border border-slate-200 rounded mb-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ 
+                width: '100%', 
+                padding: '8px 12px', 
+                border: '1px solid #e2e8f0', 
+                borderRadius: '4px', 
+                marginBottom: '8px', 
+                fontSize: '14px',
+                outline: 'none'
+              }}
               autoFocus
             />
             <input
@@ -91,12 +127,30 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
               value={newSolution}
               onChange={(e) => setNewSolution(e.target.value)}
               placeholder="Proposed Solution"
-              className="w-full px-3 py-2 border border-slate-200 rounded mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{ 
+                width: '100%', 
+                padding: '8px 12px', 
+                border: '1px solid #e2e8f0', 
+                borderRadius: '4px', 
+                marginBottom: '12px', 
+                fontSize: '14px',
+                outline: 'none'
+              }}
             />
-            <div className="flex gap-2">
+            <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={handleAddCard}
-                className="flex-1 px-3 py-1.5 bg-blue-600 text-white rounded text-sm font-medium shadow-sm hover:bg-indigo-600 hover:shadow-md transition-all cursor-pointer"
+                style={{ 
+                  flex: 1, 
+                  padding: '6px 12px', 
+                  backgroundColor: '#2563eb', 
+                  color: 'white', 
+                  borderRadius: '4px', 
+                  fontSize: '14px', 
+                  fontWeight: '500', 
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
               >
                 Add Card
               </button>
@@ -106,7 +160,15 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                   setNewProblem('');
                   setNewSolution('');
                 }}
-                className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded text-sm hover:bg-slate-50 transition-colors cursor-pointer"
+                style={{ 
+                  padding: '6px 12px', 
+                  border: '1px solid #cbd5e1', 
+                  color: '#374151', 
+                  borderRadius: '4px', 
+                  fontSize: '14px', 
+                  backgroundColor: 'white',
+                  cursor: 'pointer'
+                }}
               >
                 Cancel
               </button>
@@ -115,7 +177,17 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         ) : (
           <button
             onClick={() => setShowAddCard(true)}
-            className="mt-3 w-full px-3 py-2 text-slate-500 hover:text-slate-700 hover:bg-white rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 transition-all text-sm cursor-pointer"
+            style={{ 
+              marginTop: '12px', 
+              width: '100%', 
+              padding: '8px 12px', 
+              color: '#64748b', 
+              backgroundColor: 'transparent',
+              borderRadius: '8px', 
+              border: '2px dashed #cbd5e1', 
+              fontSize: '14px', 
+              cursor: 'pointer'
+            }}
           >
             + Add Card
           </button>
