@@ -1,23 +1,9 @@
 import { useState } from 'react';
 import type { Card, Theme } from '../types';
 
-const themeColors: Record<Theme, string> = {
-  'onboarding': '#3b82f6',
-  'integrations': '#10b981',
-  'library': '#8b5cf6',
-  'pricing': '#f59e0b',
-  'ai-input': '#ef4444',
-  'layout': '#06b6d4'
-};
-
-const themeLabels: Record<Theme, string> = {
-  'onboarding': 'Onboarding',
-  'integrations': 'Integrations',
-  'library': 'Library',
-  'pricing': 'Pricing',
-  'ai-input': 'AI Input',
-  'layout': 'Layout'
-};
+const palette = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#a3e635','#f472b6','#22d3ee','#f97316'];
+const getThemeColor = (name: string) => { let hash=0; for(let i=0;i<name.length;i++){ hash=(hash*31+name.charCodeAt(i))>>>0;} return palette[hash%palette.length]; };
+const labelize = (s: string) => s.replace(/[-_]/g,' ').replace(/\s+/g,' ').trim().replace(/\b\w/g, c=>c.toUpperCase());
 
 interface KanbanCardProps {
   card: Card;
@@ -111,12 +97,18 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
               borderRadius: '12px',
               fontSize: '10px',
               fontWeight: '500',
-              backgroundColor: themeColors[card.theme],
+              backgroundColor: getThemeColor(card.theme),
               color: 'white'
             }}
           >
-            {themeLabels[card.theme]}
+            {labelize(card.theme)}
           </span>
+          {canEdit && (
+            <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+              <button onClick={(e)=>{ e.stopPropagation(); (window as any).__kanbanReorder?.(card.id,'up'); }} style={{ border:'1px solid #e2e8f0', background:'white', borderRadius:4, padding:'2px 6px', cursor:'pointer' }}>↑</button>
+              <button onClick={(e)=>{ e.stopPropagation(); (window as any).__kanbanReorder?.(card.id,'down'); }} style={{ border:'1px solid #e2e8f0', background:'white', borderRadius:4, padding:'2px 6px', cursor:'pointer' }}>↓</button>
+            </span>
+          )}
           <span style={{ fontSize: '12px', color: '#0f172a' }}>
             {'★'.repeat(card.rating)}{'☆'.repeat(5 - card.rating)}
           </span>

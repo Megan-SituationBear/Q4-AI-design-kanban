@@ -8,23 +8,9 @@ interface TopNavProps {
   onOpenShare?: () => void;
 }
 
-const themeColors: Record<Theme, string> = {
-  'onboarding': '#3b82f6',
-  'integrations': '#10b981',
-  'library': '#8b5cf6',
-  'pricing': '#f59e0b',
-  'ai-input': '#ef4444',
-  'layout': '#06b6d4'
-};
-
-const themeLabels: Record<Theme, string> = {
-  'onboarding': 'Onboarding',
-  'integrations': 'Integrations',
-  'library': 'Library',
-  'pricing': 'Pricing',
-  'ai-input': 'AI Input',
-  'layout': 'Layout'
-};
+const palette = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#a3e635','#f472b6','#22d3ee','#f97316'];
+const getThemeColor = (name: string) => { let hash=0; for(let i=0;i<name.length;i++){ hash=(hash*31+name.charCodeAt(i))>>>0;} return palette[hash%palette.length]; };
+const labelize = (s: string) => s.replace(/[-_]/g,' ').replace(/\s+/g,' ').trim().replace(/\b\w/g, c=>c.toUpperCase());
 
 const TopNav: React.FC<TopNavProps> = ({ themes, selectedThemes, onToggleTheme }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -142,7 +128,7 @@ const TopNav: React.FC<TopNavProps> = ({ themes, selectedThemes, onToggleTheme }
                 fontWeight: '500',
                 cursor: 'pointer',
                 backgroundColor: selectedThemes.includes(theme) 
-                  ? themeColors[theme] 
+                  ? getThemeColor(theme) 
                   : '#f1f5f9',
                 color: selectedThemes.includes(theme) 
                   ? 'white' 
@@ -150,7 +136,7 @@ const TopNav: React.FC<TopNavProps> = ({ themes, selectedThemes, onToggleTheme }
                 transition: 'all 0.2s'
               }}
             >
-              {themeLabels[theme]}
+              {labelize(theme)}
             </button>
           ))}
         </div>

@@ -2,25 +2,11 @@ import { useState } from 'react';
 import KanbanCard from './KanbanCard';
 import type { Card, Theme } from '../types';
 
-const themes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai-input', 'layout'];
-
-const themeColors: Record<Theme, string> = {
-  'onboarding': '#3b82f6',
-  'integrations': '#10b981',
-  'library': '#8b5cf6',
-  'pricing': '#f59e0b',
-  'ai-input': '#ef4444',
-  'layout': '#06b6d4'
+const palette = ['#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#a3e635','#f472b6','#22d3ee','#f97316'];
+const getThemeColor = (name: string) => {
+  let hash = 0; for (let i=0;i<name.length;i++) hash = (hash*31 + name.charCodeAt(i))>>>0; return palette[hash % palette.length];
 };
-
-const themeLabels: Record<Theme, string> = {
-  'onboarding': 'Onboarding',
-  'integrations': 'Integrations',
-  'library': 'Library',
-  'pricing': 'Pricing',
-  'ai-input': 'AI Input',
-  'layout': 'Layout'
-};
+const labelize = (s: string) => s.replace(/[-_]/g,' ').replace(/\s+/g,' ').trim().replace(/\b\w/g, c=>c.toUpperCase());
 
 interface KanbanColumnProps {
   column: { id: string; title: string };
@@ -33,6 +19,9 @@ interface KanbanColumnProps {
   onDeleteCard: (cardId: string) => void;
   isMobile?: boolean;
   canEdit?: boolean;
+  themes?: string[];
+  onCreateTheme?: (name: string) => void;
+  onReorderWithinColumn?: (cardId: string, direction: 'up' | 'down') => void;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -46,6 +35,9 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onDeleteCard,
   isMobile = false,
   canEdit = true,
+  themes = [],
+  onCreateTheme,
+  onReorderWithinColumn,
 }) => {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newProblem, setNewProblem] = useState('');
@@ -53,6 +45,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const [newDocLink, setNewDocLink] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
   const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5>(3);
+  const [creatingTheme, setCreatingTheme] = useState(false);
+  const [newThemeName, setNewThemeName] = useState('');
 
   const handleAddCard = () => {
     if (newProblem.trim() && selectedTheme) {
@@ -158,7 +152,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                   <button
                     key={theme}
                     type="button"
-                    onClick={() => chooseTheme(theme)}
+                    onClick={() => chooseTheme(theme as Theme)}
                     style={{
                       padding: '6px 10px',
                       borderRadius: '16px',
@@ -166,13 +160,23 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                       fontSize: '12px',
                       fontWeight: 500,
                       cursor: 'pointer',
-                      backgroundColor: selectedTheme === theme ? themeColors[theme] : '#f8fafc',
+                      backgroundColor: selectedTheme === theme ? getThemeColor(theme) : '#f8fafc',
                       color: selectedTheme === theme ? 'white' : '#334155'
                     }}
                   >
-                    {themeLabels[theme]}
+                    {labelize(theme)}
                   </button>
                 ))}
+                {canEdit && onCreateTheme && !creatingTheme && (
+                  <button type="button" onClick={() => setCreatingTheme(true)} style={{ padding: '6px 10px', borderRadius: 16, border: '1px dashed #cbd5e1', background: 'white', cursor: 'pointer', fontSize: 12 }}>+ Create</button>
+                )}
+                {creatingTheme && (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <input value={newThemeName} onChange={e=>setNewThemeName(e.target.value)} placeholder="New theme name" style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6 }} />
+                    <button type="button" onClick={() => { const n = newThemeName.trim(); if(n){ onCreateTheme?.(n); setSelectedTheme(n); } setNewThemeName(''); setCreatingTheme(false); }} style={{ padding: '6px 10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Add</button>
+                    <button type="button" onClick={() => { setCreatingTheme(false); setNewThemeName(''); }} style={{ padding: '6px 10px', border: '1px solid #e2e8f0', borderRadius: 6, background: 'white', cursor: 'pointer' }}>Cancel</button>
+                  </div>
+                )}
               </div>
             </div>
 

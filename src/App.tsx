@@ -1,18 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import KanbanBoard from './components/KanbanBoard';
 import TopNav from './components/TopNav';
 import ShareModal from './components/ShareModal';
 import type { Card, Theme, Member, Role } from './types';
 import './App.css';
 
-const themes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai-input', 'layout'];
+const defaultThemes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai input', 'layout'];
 
 function App() {
   const [shareOpen, setShareOpen] = useState(false);
-  const [members, setMembers] = useState<Member[]>([
-    { id: 'me', email: 'you@example.com', role: 'admin' },
-  ]);
+  const [members, setMembers] = useState<Member[]>(() => {
+    try {
+      const raw = localStorage.getItem('kanban.members');
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return [{ id: 'me', email: 'you@example.com', role: 'admin' }];
+  });
   const [currentRole, setCurrentRole] = useState<Role>('admin');
+  const [themes, setThemes] = useState<Theme[]>(defaultThemes);
   const [cards, setCards] = useState<Card[]>([
     {
       id: '1',
@@ -39,6 +44,11 @@ function App() {
   ]);
 
   const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
+
+  // persist members
+  useEffect(() => {
+    try { localStorage.setItem('kanban.members', JSON.stringify(members)); } catch {}
+  }, [members]);
 
   const handleMoveCard = (cardId: string, newColumn: string) => {
     setCards(prevCards =>
@@ -78,6 +88,34 @@ function App() {
     ? cards 
     : cards.filter(card => selectedThemes.includes(card.theme));
 
+  const handleCreateTheme = (name: string) => {
+    const normalized = name.trim();
+    if (!normalized) return;
+    if (!themes.map(t => t.toLowerCase()).includes(normalized.toLowerCase())) {
+      setThemes(prev => [...prev, normalized]);
+    }
+  };
+
+  const handleReorderWithinColumn = (cardId: string, direction: 'up' | 'down') => {
+    setCards(prev => {
+      const idx = prev.findIndex(c => c.id === cardId);
+      if (idx === -1) return prev;
+      const col = prev[idx].column;
+      let swapIdx = -1;
+      if (direction === 'up') {
+        for (let i = idx - 1; i >= 0; i--) if (prev[i].column === col) { swapIdx = i; break; }
+      } else {
+        for (let i = idx + 1; i < prev.length; i++) if (prev[i].column === col) { swapIdx = i; break; }
+      }
+      if (swapIdx === -1) return prev;
+      const arr = [...prev];
+      const tmp = arr[swapIdx];
+      arr[swapIdx] = arr[idx];
+      arr[idx] = tmp;
+      return arr;
+    });
+  };
+
   return (
     <div style={{ 
       height: '100vh', 
@@ -98,6 +136,9 @@ function App() {
         onUpdateCard={handleUpdateCard}
         onDeleteCard={handleDeleteCard}
         canEdit={currentRole === 'admin'}
+        themes={themes}
+        onCreateTheme={currentRole === 'admin' ? handleCreateTheme : undefined}
+        onReorderWithinColumn={handleReorderWithinColumn}
       />
       <ShareModal 
         open={shareOpen}

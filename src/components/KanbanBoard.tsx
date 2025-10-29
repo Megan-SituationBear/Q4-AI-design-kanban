@@ -9,6 +9,9 @@ interface KanbanBoardProps {
   onUpdateCard: (card: Card) => void;
   onDeleteCard: (cardId: string) => void;
   canEdit?: boolean;
+  themes?: string[];
+  onCreateTheme?: (name: string) => void;
+  onReorderWithinColumn?: (cardId: string, direction: 'up' | 'down') => void;
 }
 
 const columns: { id: ColumnId; title: string }[] = [
@@ -38,6 +41,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onUpdateCard,
   onDeleteCard,
   canEdit = true,
+  themes = [],
+  onCreateTheme,
+  onReorderWithinColumn,
 }) => {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -67,6 +73,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
   };
 
+  // expose reorder function globally for quick use from cards (avoids deep prop drilling into buttons)
+  useEffect(() => {
+    (window as any).__kanbanReorder = onReorderWithinColumn;
+    return () => { if ((window as any).__kanbanReorder === onReorderWithinColumn) (window as any).__kanbanReorder = undefined; };
+  }, [onReorderWithinColumn]);
+
   const displayColumns = getColumnsForScreen(isMobile);
 
   return (
@@ -93,6 +105,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             onDeleteCard={onDeleteCard}
             isMobile={isMobile}
             canEdit={canEdit}
+            themes={themes}
+            onCreateTheme={onCreateTheme}
+            onReorderWithinColumn={onReorderWithinColumn}
           />
         ))}
       </div>

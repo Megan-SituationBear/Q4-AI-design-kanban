@@ -1,10 +1,4 @@
-export type Theme = 
-  | 'onboarding'
-  | 'integrations'
-  | 'library'
-  | 'pricing'
-  | 'ai-input'
-  | 'layout';
+export type Theme = string; // dynamic themes
 
 export type Role = 'admin' | 'viewer';
 
