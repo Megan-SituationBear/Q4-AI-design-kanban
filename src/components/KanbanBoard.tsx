@@ -11,7 +11,7 @@ interface KanbanBoardProps {
 }
 
 const columns: { id: ColumnId; title: string }[] = [
-  { id: 'backlog', title: 'Backlog' },
+  { id: 'backlog', title: 'Problems to Solve' },
   { id: 'in-progress', title: 'In Progress' },
   { id: 'dev-ux-input', title: 'Dev and UX Input' },
   { id: 'iterating', title: 'Iterating' },
