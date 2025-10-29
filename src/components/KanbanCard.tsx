@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card } from '../types';
+import type { Card } from '../types';
 
 interface KanbanCardProps {
   card: Card;
@@ -247,4 +247,5 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
 };
 
 export default KanbanCard;
+
 

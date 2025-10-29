@@ -16,10 +16,9 @@ export interface Column {
 }
 
 export type ColumnId = 
-  | 'backlog' 
-  | 'in-progress' 
-  | 'dev-ux-input' 
-  | 'iterating' 
-  | 'user-testing' 
-  | 'ready-handoff';
+  | 'problems'
+  | 'on-deck'
+  | 'feedback-needed'
+  | 'ready';
+
 

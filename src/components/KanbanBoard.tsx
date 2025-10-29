@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import KanbanColumn from './KanbanColumn';
-import { Card, ColumnId } from '../types';
+import type { Card, ColumnId } from '../types';
 
 interface KanbanBoardProps {
   cards: Card[];
@@ -11,12 +11,10 @@ interface KanbanBoardProps {
 }
 
 const columns: { id: ColumnId; title: string }[] = [
-  { id: 'backlog', title: 'Problems to Solve' },
-  { id: 'in-progress', title: 'In Progress' },
-  { id: 'dev-ux-input', title: 'Dev and UX Input' },
-  { id: 'iterating', title: 'Iterating' },
-  { id: 'user-testing', title: 'User Testing Needed' },
-  { id: 'ready-handoff', title: 'Ready For Handoff' },
+  { id: 'problems', title: 'Problems' },
+  { id: 'on-deck', title: 'On Deck' },
+  { id: 'feedback-needed', title: 'Feedback Needed' },
+  { id: 'ready', title: 'Ready' },
 ];
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import KanbanBoard from './components/KanbanBoard';
+import Landing from './components/Landing';
 import TopNav from './components/TopNav';
-import { Card } from './types';
+import type { Card } from './types';
 import './App.css';
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [cards, setCards] = useState<Card[]>([
     {
       id: '1',
@@ -12,7 +14,7 @@ function App() {
       solution: 'Move authentication to top-right corner with clear CTA',
       figmaLink: 'https://figma.com/example',
       protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
-      column: 'backlog',
+      column: 'problems',
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -22,7 +24,7 @@ function App() {
       solution: 'Reduce steps from 5 to 3, combine name + interests',
       figmaLink: 'https://figma.com/example',
       protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
-      column: 'in-progress',
+      column: 'on-deck',
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -54,8 +56,14 @@ function App() {
     setCards(prevCards => prevCards.filter(card => card.id !== cardId));
   };
 
+  if (showLanding) {
+    return (
+      <Landing onEnter={() => setShowLanding(false)} />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="h-screen bg-white flex flex-col">
       <TopNav />
       <KanbanBoard
         cards={cards}

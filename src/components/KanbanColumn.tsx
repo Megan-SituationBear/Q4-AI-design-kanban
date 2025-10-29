@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import KanbanCard from './KanbanCard';
-import { Card } from '../types';
+import type { Card } from '../types';
 
 interface KanbanColumnProps {
   column: { id: string; title: string };
@@ -126,4 +126,5 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 };
 
 export default KanbanColumn;
+
 
