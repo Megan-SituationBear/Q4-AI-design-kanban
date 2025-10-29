@@ -24,6 +24,7 @@ interface KanbanCardProps {
   onDragStart: (card: Card) => void;
   onUpdate: (card: Card) => void;
   onDelete: (cardId: string) => void;
+  canEdit?: boolean;
 }
 
 const KanbanCard: React.FC<KanbanCardProps> = ({
@@ -31,6 +32,7 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
   onDragStart,
   onUpdate,
   onDelete,
+  canEdit = true,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -84,66 +86,47 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
           {card.problem}
         </h4>
 
-        {/* Solution (Subtitle) */}
-        <p style={{ 
-          fontSize: '12px', 
-          color: '#64748b', 
-          marginBottom: '12px', 
-          margin: '0 0 12px 0',
-          lineHeight: '1.4',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden'
-        }}>
-          {card.solution}
-        </p>
+        {/* Description (Subtitle) */}
+        {card.description && (
+          <p style={{ 
+            fontSize: '12px', 
+            color: '#64748b', 
+            marginBottom: '12px', 
+            margin: '0 0 12px 0',
+            lineHeight: '1.4',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}>
+            {card.description}
+          </p>
+        )}
 
-        {/* Theme Pills */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
-          {card.themes.map(theme => (
-            <span
-              key={theme}
-              style={{
-                padding: '4px 8px',
-                borderRadius: '12px',
-                fontSize: '10px',
-                fontWeight: '500',
-                backgroundColor: themeColors[theme],
-                color: 'white'
-              }}
-            >
-              {themeLabels[theme]}
-            </span>
-          ))}
+        {/* Theme Pill + Rating */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span
+            style={{
+              padding: '4px 8px',
+              borderRadius: '12px',
+              fontSize: '10px',
+              fontWeight: '500',
+              backgroundColor: themeColors[card.theme],
+              color: 'white'
+            }}
+          >
+            {themeLabels[card.theme]}
+          </span>
+          <span style={{ fontSize: '12px', color: '#0f172a' }}>
+            {'★'.repeat(card.rating)}{'☆'.repeat(5 - card.rating)}
+          </span>
         </div>
 
         {/* Links */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {card.figmaLink && (
+        {card.docLink && (
+          <div style={{ display: 'flex', gap: '8px' }}>
             <a
-              href={card.figmaLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              style={{ 
-                fontSize: '12px', 
-                color: '#2563eb', 
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12.5A3.5 3.5 0 1 1 8.5 9a3.5 3.5 0 0 1 3.5 3.5zm-3.5 7A3.5 3.5 0 1 1 12 16v3.5zm0-14A3.5 3.5 0 1 1 12 2v3.5zm7 3.5A3.5 3.5 0 1 1 12 5.5v3.5h3.5z"/>
-              </svg>
-              Figma
-            </a>
-          )}
-          {card.protoLink && (
-            <a
-              href={card.protoLink}
+              href={card.docLink}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
@@ -157,13 +140,12 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
               }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16l4-4h6a2 2 0 0 0 2-2V2z"/>
               </svg>
-              Proto
+              Doc
             </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}
@@ -304,25 +286,27 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-4 border-t border-slate-200">
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm hover:bg-indigo-600 hover:shadow-md transition-all cursor-pointer"
-                  >
-                    Edit Card
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this card?')) {
-                        onDelete(card.id);
-                        setShowDetails(false);
-                      }
-                    }}
-                    className="px-6 py-2.5 border border-red-300 text-red-700 rounded-lg font-medium hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </div>
+                {canEdit && (
+                  <div className="flex gap-3 pt-4 border-t border-slate-200">
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium shadow-sm hover:bg-indigo-600 hover:shadow-md transition-all cursor-pointer"
+                    >
+                      Edit Card
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm('Are you sure you want to delete this card?')) {
+                          onDelete(card.id);
+                          setShowDetails(false);
+                        }
+                      }}
+                      className="px-6 py-2.5 border border-red-300 text-red-700 rounded-lg font-medium hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

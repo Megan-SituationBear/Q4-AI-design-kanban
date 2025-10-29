@@ -1,32 +1,38 @@
 import { useState } from 'react';
 import KanbanBoard from './components/KanbanBoard';
 import TopNav from './components/TopNav';
-import type { Card, Theme } from './types';
+import ShareModal from './components/ShareModal';
+import type { Card, Theme, Member, Role } from './types';
 import './App.css';
 
 const themes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai-input', 'layout'];
 
 function App() {
+  const [shareOpen, setShareOpen] = useState(false);
+  const [members, setMembers] = useState<Member[]>([
+    { id: 'me', email: 'you@example.com', role: 'admin' },
+  ]);
+  const [currentRole, setCurrentRole] = useState<Role>('admin');
   const [cards, setCards] = useState<Card[]>([
     {
       id: '1',
       problem: 'Users can\'t find the login button',
-      solution: 'Move authentication to top-right corner with clear CTA',
-      figmaLink: 'https://figma.com/example',
-      protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
+      description: 'Primary action is hidden in overflow menu on desktop.',
+      docLink: 'https://figma.com/example',
       column: 'problems',
-      themes: ['onboarding', 'layout'],
+      theme: 'layout',
+      rating: 4,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
     {
       id: '2',
       problem: 'Onboarding flow is too long',
-      solution: 'Reduce steps from 5 to 3, combine name + interests',
-      figmaLink: 'https://figma.com/example',
-      protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
+      description: 'Reduce steps; users drop at step 3 of 5.',
+      docLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
       column: 'on-deck',
-      themes: ['onboarding'],
+      theme: 'onboarding',
+      rating: 3,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -70,9 +76,7 @@ function App() {
 
   const filteredCards = selectedThemes.length === 0 
     ? cards 
-    : cards.filter(card => 
-        selectedThemes.some(theme => card.themes.includes(theme))
-      );
+    : cards.filter(card => selectedThemes.includes(card.theme));
 
   return (
     <div style={{ 
@@ -85,6 +89,7 @@ function App() {
         themes={themes}
         selectedThemes={selectedThemes}
         onToggleTheme={toggleTheme}
+        onOpenShare={() => setShareOpen(true)}
       />
       <KanbanBoard
         cards={filteredCards}
@@ -92,6 +97,13 @@ function App() {
         onAddCard={handleAddCard}
         onUpdateCard={handleUpdateCard}
         onDeleteCard={handleDeleteCard}
+        canEdit={currentRole === 'admin'}
+      />
+      <ShareModal 
+        open={shareOpen}
+        members={members}
+        onClose={() => setShareOpen(false)}
+        onSave={(m) => { setMembers(m); setShareOpen(false); }}
       />
     </div>
   );

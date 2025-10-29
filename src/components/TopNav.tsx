@@ -5,6 +5,7 @@ interface TopNavProps {
   themes: Theme[];
   selectedThemes: Theme[];
   onToggleTheme: (theme: Theme) => void;
+  onOpenShare?: () => void;
 }
 
 const themeColors: Record<Theme, string> = {
@@ -106,7 +107,7 @@ const TopNav: React.FC<TopNavProps> = ({ themes, selectedThemes, onToggleTheme }
           </div>
 
           {/* Right: Share Button */}
-          <button style={{ 
+          <button onClick={onOpenShare} style={{ 
             padding: isMobile ? '6px 12px' : '8px 16px', 
             backgroundColor: '#2563eb', 
             color: 'white', 

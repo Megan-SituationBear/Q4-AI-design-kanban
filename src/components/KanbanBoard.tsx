@@ -8,6 +8,7 @@ interface KanbanBoardProps {
   onAddCard: (card: Card) => void;
   onUpdateCard: (card: Card) => void;
   onDeleteCard: (cardId: string) => void;
+  canEdit?: boolean;
 }
 
 const columns: { id: ColumnId; title: string }[] = [
@@ -36,6 +37,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onAddCard,
   onUpdateCard,
   onDeleteCard,
+  canEdit = true,
 }) => {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -90,6 +92,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             onUpdateCard={onUpdateCard}
             onDeleteCard={onDeleteCard}
             isMobile={isMobile}
+            canEdit={canEdit}
           />
         ))}
       </div>

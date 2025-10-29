@@ -6,14 +6,22 @@ export type Theme =
   | 'ai-input'
   | 'layout';
 
+export type Role = 'admin' | 'viewer';
+
+export interface Member {
+  id: string;
+  email: string;
+  role: Role;
+}
+
 export interface Card {
   id: string;
   problem: string;
-  solution: string;
-  figmaLink?: string;
-  protoLink?: string;
+  description?: string;
+  docLink?: string;
   column: string;
-  themes: Theme[];
+  theme: Theme;
+  rating: 1 | 2 | 3 | 4 | 5; // how big a problem?
   createdAt: Date;
   updatedAt: Date;
 }

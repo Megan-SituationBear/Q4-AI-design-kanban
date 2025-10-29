@@ -32,6 +32,7 @@ interface KanbanColumnProps {
   onUpdateCard: (card: Card) => void;
   onDeleteCard: (cardId: string) => void;
   isMobile?: boolean;
+  canEdit?: boolean;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -44,37 +45,40 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onUpdateCard,
   onDeleteCard,
   isMobile = false,
+  canEdit = true,
 }) => {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newProblem, setNewProblem] = useState('');
-  const [newSolution, setNewSolution] = useState('');
-  const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
+  const [newDescription, setNewDescription] = useState('');
+  const [newDocLink, setNewDocLink] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
+  const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5>(3);
 
   const handleAddCard = () => {
-    if (newProblem.trim() && newSolution.trim()) {
+    if (newProblem.trim() && selectedTheme) {
       const newCard: Card = {
         id: Date.now().toString(),
         problem: newProblem,
-        solution: newSolution,
+        description: newDescription,
+        docLink: newDocLink || undefined,
         column: column.id,
-        themes: selectedThemes,
+        theme: selectedTheme,
+        rating,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       onAddCard(newCard);
       setNewProblem('');
-      setNewSolution('');
-      setSelectedThemes([]);
+      setNewDescription('');
+      setNewDocLink('');
+      setSelectedTheme(null);
+      setRating(3);
       setShowAddCard(false);
     }
   };
 
-  const toggleTheme = (theme: Theme) => {
-    setSelectedThemes(prev => 
-      prev.includes(theme) 
-        ? prev.filter(t => t !== theme)
-        : [...prev, theme]
-    );
+  const chooseTheme = (theme: Theme) => {
+    setSelectedTheme(theme);
   };
 
   return (
@@ -129,12 +133,13 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
               onDragStart={onDragStart}
               onUpdate={onUpdateCard}
               onDelete={onDeleteCard}
+              canEdit={canEdit}
             />
           ))}
         </div>
 
         {/* Add Card Form */}
-        {showAddCard ? (
+        {showAddCard && canEdit ? (
           <div style={{ 
             marginTop: '12px', 
             backgroundColor: 'white', 
@@ -143,6 +148,35 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
             border: '2px solid #3b82f6', 
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }}>
+            {/* 1) Theme */}
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#0f172a', marginBottom: '6px' }}>
+                Theme
+              </label>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {themes.map(theme => (
+                  <button
+                    key={theme}
+                    type="button"
+                    onClick={() => chooseTheme(theme)}
+                    style={{
+                      padding: '6px 10px',
+                      borderRadius: '16px',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      backgroundColor: selectedTheme === theme ? themeColors[theme] : '#f8fafc',
+                      color: selectedTheme === theme ? 'white' : '#334155'
+                    }}
+                  >
+                    {themeLabels[theme]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 2) Problem */}
             <input
               type="text"
               value={newProblem}
@@ -153,17 +187,63 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 padding: '8px 12px', 
                 border: '1px solid #e2e8f0', 
                 borderRadius: '4px', 
-                marginBottom: '8px', 
+                marginBottom: '10px', 
                 fontSize: '14px',
                 outline: 'none'
               }}
               autoFocus
             />
+            
+            {/* 3) How big a problem? (rating) */}
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: '4px' }}>
+                How big a problem?
+              </label>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                {[1,2,3,4,5].map(n => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setRating(n as 1 | 2 | 3 | 4 | 5)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      color: n <= rating ? '#eab308' : '#cbd5e1'
+                    }}
+                    aria-label={`Set rating ${n}`}
+                  >
+                    {n <= rating ? '★' : '☆'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 4) Description */}
+            <textarea
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Describe the context, users, and impact..."
+              rows={4}
+              style={{ 
+                width: '100%', 
+                padding: '8px 12px', 
+                border: '1px solid #e2e8f0', 
+                borderRadius: '4px', 
+                marginBottom: '10px', 
+                fontSize: '14px',
+                outline: 'none',
+                resize: 'vertical'
+              }}
+            />
+
+            {/* 5) Link to relevant doc */}
             <input
-              type="text"
-              value={newSolution}
-              onChange={(e) => setNewSolution(e.target.value)}
-              placeholder="Proposed Solution"
+              type="url"
+              value={newDocLink}
+              onChange={(e) => setNewDocLink(e.target.value)}
+              placeholder="https://... (Figma, doc, ticket)"
               style={{ 
                 width: '100%', 
                 padding: '8px 12px', 
@@ -174,45 +254,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 outline: 'none'
               }}
             />
-            
-            {/* Theme Selection */}
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '12px', 
-                fontWeight: '500', 
-                color: '#374151', 
-                marginBottom: '6px' 
-              }}>
-                Themes:
-              </label>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {themes.map(theme => (
-                  <button
-                    key={theme}
-                    type="button"
-                    onClick={() => toggleTheme(theme)}
-                    style={{
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      border: 'none',
-                      fontSize: '10px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      backgroundColor: selectedThemes.includes(theme) 
-                        ? themeColors[theme] 
-                        : '#f1f5f9',
-                      color: selectedThemes.includes(theme) 
-                        ? 'white' 
-                        : '#64748b',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    {themeLabels[theme]}
-                  </button>
-                ))}
-              </div>
-            </div>
             
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
@@ -268,7 +309,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           >
             + Add Card
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );
