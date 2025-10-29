@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import KanbanBoard from './components/KanbanBoard';
-import Landing from './components/Landing';
 import TopNav from './components/TopNav';
 import type { Card } from './types';
 import './App.css';
 
 function App() {
-  const [showLanding, setShowLanding] = useState(true);
   const [cards, setCards] = useState<Card[]>([
     {
       id: '1',
@@ -55,12 +53,6 @@ function App() {
   const handleDeleteCard = (cardId: string) => {
     setCards(prevCards => prevCards.filter(card => card.id !== cardId));
   };
-
-  if (showLanding) {
-    return (
-      <Landing onEnter={() => setShowLanding(false)} />
-    );
-  }
 
   return (
     <div className="h-screen bg-white flex flex-col">
