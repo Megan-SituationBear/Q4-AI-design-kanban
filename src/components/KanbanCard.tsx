@@ -1,5 +1,23 @@
 import { useState } from 'react';
-import type { Card } from '../types';
+import type { Card, Theme } from '../types';
+
+const themeColors: Record<Theme, string> = {
+  'onboarding': '#3b82f6',
+  'integrations': '#10b981',
+  'library': '#8b5cf6',
+  'pricing': '#f59e0b',
+  'ai-input': '#ef4444',
+  'layout': '#06b6d4'
+};
+
+const themeLabels: Record<Theme, string> = {
+  'onboarding': 'Onboarding',
+  'integrations': 'Integrations',
+  'library': 'Library',
+  'pricing': 'Pricing',
+  'ai-input': 'AI Input',
+  'layout': 'Layout'
+};
 
 interface KanbanCardProps {
   card: Card;
@@ -80,6 +98,25 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
         }}>
           {card.solution}
         </p>
+
+        {/* Theme Pills */}
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
+          {card.themes.map(theme => (
+            <span
+              key={theme}
+              style={{
+                padding: '4px 8px',
+                borderRadius: '12px',
+                fontSize: '10px',
+                fontWeight: '500',
+                backgroundColor: themeColors[theme],
+                color: 'white'
+              }}
+            >
+              {themeLabels[theme]}
+            </span>
+          ))}
+        </div>
 
         {/* Links */}
         <div style={{ display: 'flex', gap: '8px' }}>

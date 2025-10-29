@@ -1,3 +1,11 @@
+export type Theme = 
+  | 'onboarding'
+  | 'integrations'
+  | 'library'
+  | 'pricing'
+  | 'ai-input'
+  | 'layout';
+
 export interface Card {
   id: string;
   problem: string;
@@ -5,6 +13,7 @@ export interface Card {
   figmaLink?: string;
   protoLink?: string;
   column: string;
+  themes: Theme[];
   createdAt: Date;
   updatedAt: Date;
 }

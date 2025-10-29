@@ -1,6 +1,26 @@
 import { useState } from 'react';
 import KanbanCard from './KanbanCard';
-import type { Card } from '../types';
+import type { Card, Theme } from '../types';
+
+const themes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai-input', 'layout'];
+
+const themeColors: Record<Theme, string> = {
+  'onboarding': '#3b82f6',
+  'integrations': '#10b981',
+  'library': '#8b5cf6',
+  'pricing': '#f59e0b',
+  'ai-input': '#ef4444',
+  'layout': '#06b6d4'
+};
+
+const themeLabels: Record<Theme, string> = {
+  'onboarding': 'Onboarding',
+  'integrations': 'Integrations',
+  'library': 'Library',
+  'pricing': 'Pricing',
+  'ai-input': 'AI Input',
+  'layout': 'Layout'
+};
 
 interface KanbanColumnProps {
   column: { id: string; title: string };
@@ -11,6 +31,7 @@ interface KanbanColumnProps {
   onAddCard: (card: Card) => void;
   onUpdateCard: (card: Card) => void;
   onDeleteCard: (cardId: string) => void;
+  isMobile?: boolean;
 }
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
@@ -22,10 +43,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onAddCard,
   onUpdateCard,
   onDeleteCard,
+  isMobile = false,
 }) => {
   const [showAddCard, setShowAddCard] = useState(false);
   const [newProblem, setNewProblem] = useState('');
   const [newSolution, setNewSolution] = useState('');
+  const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
 
   const handleAddCard = () => {
     if (newProblem.trim() && newSolution.trim()) {
@@ -34,18 +57,32 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         problem: newProblem,
         solution: newSolution,
         column: column.id,
+        themes: selectedThemes,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
       onAddCard(newCard);
       setNewProblem('');
       setNewSolution('');
+      setSelectedThemes([]);
       setShowAddCard(false);
     }
   };
 
+  const toggleTheme = (theme: Theme) => {
+    setSelectedThemes(prev => 
+      prev.includes(theme) 
+        ? prev.filter(t => t !== theme)
+        : [...prev, theme]
+    );
+  };
+
   return (
-    <div style={{ width: '300px', flexShrink: 0, minHeight: 'calc(100vh - 200px)' }}>
+    <div style={{ 
+      width: isMobile ? '280px' : '300px', 
+      flexShrink: 0, 
+      minHeight: isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 200px)' 
+    }}>
       {/* Column Header */}
       <div style={{ 
         backgroundColor: '#f8fafc', 
@@ -137,6 +174,46 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 outline: 'none'
               }}
             />
+            
+            {/* Theme Selection */}
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ 
+                display: 'block', 
+                fontSize: '12px', 
+                fontWeight: '500', 
+                color: '#374151', 
+                marginBottom: '6px' 
+              }}>
+                Themes:
+              </label>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {themes.map(theme => (
+                  <button
+                    key={theme}
+                    type="button"
+                    onClick={() => toggleTheme(theme)}
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      border: 'none',
+                      fontSize: '10px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      backgroundColor: selectedThemes.includes(theme) 
+                        ? themeColors[theme] 
+                        : '#f1f5f9',
+                      color: selectedThemes.includes(theme) 
+                        ? 'white' 
+                        : '#64748b',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {themeLabels[theme]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={handleAddCard}

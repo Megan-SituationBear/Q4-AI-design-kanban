@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import KanbanBoard from './components/KanbanBoard';
 import TopNav from './components/TopNav';
-import type { Card } from './types';
+import type { Card, Theme } from './types';
 import './App.css';
+
+const themes: Theme[] = ['onboarding', 'integrations', 'library', 'pricing', 'ai-input', 'layout'];
 
 function App() {
   const [cards, setCards] = useState<Card[]>([
@@ -13,6 +15,7 @@ function App() {
       figmaLink: 'https://figma.com/example',
       protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
       column: 'problems',
+      themes: ['onboarding', 'layout'],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -23,10 +26,13 @@ function App() {
       figmaLink: 'https://figma.com/example',
       protoLink: 'https://megan-situationbear.github.io/Mego-Proto-Experiments/',
       column: 'on-deck',
+      themes: ['onboarding'],
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   ]);
+
+  const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
 
   const handleMoveCard = (cardId: string, newColumn: string) => {
     setCards(prevCards =>
@@ -54,6 +60,20 @@ function App() {
     setCards(prevCards => prevCards.filter(card => card.id !== cardId));
   };
 
+  const toggleTheme = (theme: Theme) => {
+    setSelectedThemes(prev => 
+      prev.includes(theme) 
+        ? prev.filter(t => t !== theme)
+        : [...prev, theme]
+    );
+  };
+
+  const filteredCards = selectedThemes.length === 0 
+    ? cards 
+    : cards.filter(card => 
+        selectedThemes.some(theme => card.themes.includes(theme))
+      );
+
   return (
     <div style={{ 
       height: '100vh', 
@@ -61,9 +81,13 @@ function App() {
       display: 'flex', 
       flexDirection: 'column' 
     }}>
-      <TopNav />
+      <TopNav 
+        themes={themes}
+        selectedThemes={selectedThemes}
+        onToggleTheme={toggleTheme}
+      />
       <KanbanBoard
-        cards={cards}
+        cards={filteredCards}
         onMoveCard={handleMoveCard}
         onAddCard={handleAddCard}
         onUpdateCard={handleUpdateCard}

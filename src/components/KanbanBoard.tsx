@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import KanbanColumn from './KanbanColumn';
 import type { Card, ColumnId } from '../types';
 
@@ -17,6 +17,19 @@ const columns: { id: ColumnId; title: string }[] = [
   { id: 'ready', title: 'Ready' },
 ];
 
+// Mobile-first column order (On Deck first)
+const getColumnsForScreen = (isMobile: boolean) => {
+  if (isMobile) {
+    return [
+      { id: 'on-deck', title: 'On Deck' },
+      { id: 'problems', title: 'Problems' },
+      { id: 'feedback-needed', title: 'Feedback Needed' },
+      { id: 'ready', title: 'Ready' },
+    ];
+  }
+  return columns;
+};
+
 const KanbanBoard: React.FC<KanbanBoardProps> = ({
   cards,
   onMoveCard,
@@ -25,6 +38,17 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   onDeleteCard,
 }) => {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleDragStart = (card: Card) => {
     setDraggedCard(card);
@@ -41,10 +65,20 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
   };
 
+  const displayColumns = getColumnsForScreen(isMobile);
+
   return (
-    <div style={{ flex: 1, overflowX: 'auto', padding: '24px' }}>
-      <div style={{ display: 'flex', gap: '16px', minWidth: 'max-content' }}>
-        {columns.map((column) => (
+    <div style={{ 
+      flex: 1, 
+      overflowX: 'auto', 
+      padding: isMobile ? '12px' : '24px' 
+    }}>
+      <div style={{ 
+        display: 'flex', 
+        gap: isMobile ? '12px' : '16px', 
+        minWidth: 'max-content' 
+      }}>
+        {displayColumns.map((column) => (
           <KanbanColumn
             key={column.id}
             column={column}
@@ -55,6 +89,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             onAddCard={onAddCard}
             onUpdateCard={onUpdateCard}
             onDeleteCard={onDeleteCard}
+            isMobile={isMobile}
           />
         ))}
       </div>
