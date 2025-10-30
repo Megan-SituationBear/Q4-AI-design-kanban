@@ -280,7 +280,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 onClick={() => {
                   setShowAddCard(false);
                   setNewProblem('');
-                  setNewSolution('');
+                  setNewDescription('');
+                  setNewDocLink('');
+                  setSelectedTheme(null);
+                  setRating(3);
+                  setCreatingTheme(false);
+                  setNewThemeName('');
                 }}
                 style={{ 
                   padding: '6px 12px', 
@@ -297,23 +302,25 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setShowAddCard(true)}
-            style={{ 
-              marginTop: '12px', 
-              width: '100%', 
-              padding: '8px 12px', 
-              color: '#64748b', 
-              backgroundColor: 'transparent',
-              borderRadius: '8px', 
-              border: '2px dashed #cbd5e1', 
-              fontSize: '14px', 
-              cursor: 'pointer'
-            }}
-          >
-            + Add Card
-          </button>
-        ) : null}
+          canEdit ? (
+            <button
+              onClick={() => setShowAddCard(true)}
+              style={{ 
+                marginTop: '12px', 
+                width: '100%', 
+                padding: '8px 12px', 
+                color: '#64748b', 
+                backgroundColor: 'transparent',
+                borderRadius: '8px', 
+                border: '2px dashed #cbd5e1', 
+                fontSize: '14px', 
+                cursor: 'pointer'
+              }}
+            >
+              + Add Card
+            </button>
+          ) : null
+        )}
       </div>
     </div>
   );
